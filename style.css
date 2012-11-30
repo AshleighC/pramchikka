@@ -1,0 +1,27 @@
+body {
+	/*background: #556270;*/
+	background-image:url('debut_light.png');
+}
+
+.box {
+	background: white 650px center no-repeat;
+	/*border-left: 10px solid #A5D500;*/
+	padding-right: 195px;
+	margin-bottom: 20px;
+	min-height: 100px;
+	
+	box-shadow: 0px 0px 20px #DDD;
+	/*overflow: hidden;*/
+	/*whitespace: nowrap;*/
+	/*text-overflow: ellipsis;*/
+}
+
+#header {
+	align: center;
+}
+
+.wrap {
+	width: 700px;
+	margin: 0 auto;
+	margin-top: 100px;
+}
