@@ -69,6 +69,8 @@
 				setHeader();
 				
 				places.change(function() {
+					document.cookie = 'place=' + escape(places.val()) + ';expires=Fri, 30 Nov 2020 00:00:00 GMT';
+					console.log(document.cookie);
 					currentPlace = places.val();
 					setHeader();
 				});
