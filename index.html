@@ -51,10 +51,21 @@
 			
 			function fetchUserTime() {
 				var userTime = Date();
-				console.log(userTime);
 				var index = userTime.indexOf(':');
 				currentTime.hours = parseInt(userTime.substring(index-2, index));
 				currentTime.minutes = parseInt(userTime.substring(index+1, index+3));
+			}
+			
+			function fetchUserPlace() {
+				var cookie = document.cookie;
+				var key = 'place=';
+				var keyIndex = cookie.indexOf(key);
+				
+				if (keyIndex !== -1) {
+					var end = cookie.indexOf(';', keyIndex);
+					if (end === -1) end = cookie.length;
+					return unescape(cookie.substring(keyIndex + key.length, end));
+				}
 			}
 			
 			function setHeader() {
@@ -63,14 +74,16 @@
 			}
 		
 			$(document).ready(function() {
+				var userPlace = fetchUserPlace();
+				if (userPlace) currentPlace = userPlace;
+			
 				var places = $('#places');
 				places.val(currentPlace);
 				fetchUserTime();
 				setHeader();
 				
 				places.change(function() {
-					document.cookie = 'place=' + escape(places.val()) + ';expires=Fri, 30 Nov 2020 00:00:00 GMT';
-					console.log(document.cookie);
+					document.cookie = 'place=' + escape(places.val()) + ';expires=Wed, 1 Jan 2020 00:00:00 GMT';
 					currentPlace = places.val();
 					setHeader();
 				});
