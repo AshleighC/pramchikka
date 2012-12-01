@@ -8,10 +8,10 @@ var timezones = {
 };
 
 var colorvalues = {
-	red: 'E65959',
+	pink: 'E55F99',
 	orange: 'EC813A',
-	yellow: 'ECDE3A',
-	green: 'BAEC3A',
+	yellow: 'ECD03A',
+	green: '9DE33C',
 	blue: '54D2F1',
 	purple: '8E94F6'
 }
@@ -20,7 +20,7 @@ function colors(i) {
 	return colorvalues[colornames[i]];
 }
 
-var colornames = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
+var colornames = ['pink', 'orange', 'yellow', 'green', 'blue', 'purple'];
 var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 var maintext = "";
@@ -96,6 +96,7 @@ $(document).ready(function() {
 	fetchUserTime();
 	setMaintext();
 	setColors();
+	//$('#maintext').remove();
 	
 	places.change(function() {
 		document.cookie = 'place=' + escape(places.val()) + ';expires=Wed, 1 Jan 2020 00:00:00 GMT';

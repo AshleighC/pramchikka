@@ -1,6 +1,7 @@
 body {
 	background: #F6F6F6;
 	background-image:url('debut_light.png');
+	font-family: Ubuntu;
 }
 
 .box {
@@ -10,7 +11,7 @@ body {
 }
 
 #pctext {
-	font-family: 'Pacifico';
+	font-family: Pacifico;
 	font-size: 70px;
 	line-height: 100px;
 	text-shadow: 1px 2px 4px #999;
