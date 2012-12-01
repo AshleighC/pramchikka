@@ -9,7 +9,7 @@ var timezones = {
 
 var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-var header = "";
+var maintext = "";
 var currentPlace = "Manila";
 var currentTime = Object();
 
@@ -61,9 +61,9 @@ function fetchUserPlace() {
 	}
 }
 
-function setHeader() {
-	header = currentTime.toString() + " in " + currentPlace + " is...";
-	$('#header').text(header);
+function setMaintext() {
+	maintext = currentTime.toString() + " in " + currentPlace + " is...";
+	$('#maintext').text(maintext);
 }
 
 $(document).ready(function() {
@@ -73,11 +73,11 @@ $(document).ready(function() {
 	var places = $('#places');
 	places.val(currentPlace);
 	fetchUserTime();
-	setHeader();
+	setMaintext();
 	
 	places.change(function() {
 		document.cookie = 'place=' + escape(places.val()) + ';expires=Wed, 1 Jan 2020 00:00:00 GMT';
 		currentPlace = places.val();
-		setHeader();
+		setMaintext();
 	});
 });
