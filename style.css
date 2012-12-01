@@ -4,6 +4,17 @@ body {
 	font-family: Ubuntu;
 }
 
+i {
+	font-size: 17px;
+	font-style: normal;
+	font-weight: bold;
+	padding-right: 4px;
+}
+
+select {
+	margin-top: 5px;
+}
+
 .box {
 	background: white;
 	box-shadow: 0px 0px 20px #DDD;
