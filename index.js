@@ -224,9 +224,6 @@ $(document).ready(function() {
 	$('select').change(function() {
 		getValues();
 		updateValues();
-		setValues();
-		//console.log(currentPlace + " \t", currentTime);
-		//console.log(makeString(currentPlace, currentTime));
 	});
 	
 	placeselect.change(function() {
