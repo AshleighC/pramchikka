@@ -7,6 +7,20 @@ var timezones = {
 	"New York": 3
 };
 
+var colorvalues = {
+	red: 'E65959',
+	orange: 'EC813A',
+	yellow: 'ECDE3A',
+	green: 'BAEC3A',
+	blue: '54D2F1',
+	purple: '8E94F6'
+}
+
+function colors(i) {
+	return colorvalues[colornames[i]];
+}
+
+var colornames = ['red', 'orange', 'yellow', 'green', 'blue', 'purple'];
 var days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 var maintext = "";
@@ -66,6 +80,13 @@ function setMaintext() {
 	$('#maintext').text(maintext);
 }
 
+function setColors() {
+	var boxes = $('.timebox');
+	for (var i = 0; i < boxes.length; i++) {
+		boxes[i].style.borderColor = colors(i);
+	}
+}
+
 $(document).ready(function() {
 	var userPlace = fetchUserPlace();
 	if (userPlace) currentPlace = userPlace;
@@ -74,6 +95,7 @@ $(document).ready(function() {
 	places.val(currentPlace);
 	fetchUserTime();
 	setMaintext();
+	setColors();
 	
 	places.change(function() {
 		document.cookie = 'place=' + escape(places.val()) + ';expires=Wed, 1 Jan 2020 00:00:00 GMT';
