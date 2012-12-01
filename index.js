@@ -14,7 +14,7 @@ function populate() {
 	}
 	
 	for (var i = 0; i < 60; i++) {
-		$('#minuteselect').append(new Option(formatMinutes(i), i));
+		$('#minuteselect').append(new Option(formatMinute(i), i));
 	}
 	
 	$.each(ampm, function() {
@@ -24,12 +24,6 @@ function populate() {
 	$.each(places, function() {
 		$('#placeselect').append(new Option(this, this));
 	});
-}
-
-function formatMinutes(i) {
-	var s = i.toString();
-	if (s.length === 1) s = '0' + s;
-	return s;
 }
 
 
@@ -105,11 +99,84 @@ function setUserTime() {
 	currentTime.minute = parseInt(userTime.substring(index+1, index+3));
 }
 
-/*
-function roundMinutes(minutes) {
-	// return 1 if minutes >= 30, 0 otherwise
+
+//PROCESSING ---------------------------------------------------------------------------
+
+var timezones = {
+	"Abu Dhabi": 12,
+	"California": 0,
+	"Colorado": 1,
+	"Manila": 16,
+	"Minnesota": 2,
+	"New York": 3
+};
+
+function updateValues() {
+	var boxes = $('.timebox');
+	
+	for (var i = 0; i < boxes.length; i++) {
+		var place = boxes[i].id;
+		boxes[i].innerHTML = makeString(place, calculateTime(place));
+	}
 }
-*/
+
+function calculateTime(place) {
+	var difference = timezones[place] - timezones[currentPlace];
+	var day = currentTime.day;
+	var hour = currentTime.hour + difference;
+	var minute = currentTime.minute;
+	
+	if (hour < 0) {
+		hour = hour + 24;
+		day = days[(days.indexOf(day) - 1) % days.length];
+	}
+	else if (hour > 23) {
+		hour = hour - 24;
+		day = days[(days.indexOf(day) + 1) % days.length];
+	}
+	
+	return {day: day, hour: hour, minute: minute}
+}
+
+function makeString(place, time) {
+	var hourAMPM = parseTime(time);
+	var day = time.day;
+	var hour = hourAMPM.hour;
+	var minute = formatMinute(time.minute);
+	var ampm = hourAMPM.ampm;
+	
+	return "<b>" + place + "</b>: " + day + " " + hour + ":" + minute + ampm;
+}
+
+function parseTime(time) {
+	var hour;
+	var ampm;
+	
+	if (time.hour === 0) {
+		hour = 12;
+		ampm = 'am';
+	}
+	else if (time.hour < 12) {
+		hour = time.hour;
+		ampm = 'am';
+	}
+	else if (time.hour === 12) {
+		hour = time.hour;
+		ampm = 'pm';
+	}
+	else {
+		hour = time.hour % 12;
+		ampm = 'pm';
+	}
+	
+	return {hour: hour, ampm: ampm}
+}
+
+function formatMinute(i) {
+	var s = i.toString();
+	if (s.length === 1) s = '0' + s;
+	return s;
+}
 
 
 //READY ---------------------------------------------------------------------------
@@ -132,26 +199,12 @@ function getValues() {
 }
 
 function setValues() {
-	$('#placeselect').val(currentPlace);
-	$('#minuteselect').val(currentTime.minute);
+	var hourAMPM = parseTime(currentTime);
 	$('#dayselect').val(currentTime.day);
-	
-	if (currentTime.hour === 0) {
-		$('#hourselect').val(12);
-		$('#ampmselect').val('am');
-	}
-	else if (currentTime.hour < 12) {
-		$('#hourselect').val(currentTime.hour);
-		$('#ampmselect').val('am');
-	}
-	else if (currentTime.hour === 12) {
-		$('#hourselect').val(currentTime.hour);
-		$('#ampmselect').val('pm');
-	}
-	else {
-		$('#hourselect').val(currentTime.hour % 12);
-		$('#ampmselect').val('pm');
-	}
+	$('#hourselect').val(hourAMPM.hour);
+	$('#minuteselect').val(currentTime.minute);
+	$('#ampmselect').val(hourAMPM.ampm);
+	$('#placeselect').val(currentPlace);
 }
 
 $(document).ready(function() {
@@ -160,6 +213,7 @@ $(document).ready(function() {
 	setUserPlace();
 	setUserTime();
 	setValues();
+	updateValues();
 	
 	var dayselect = $('#dayselect');
 	var hourselect = $('#hourselect');
@@ -169,8 +223,10 @@ $(document).ready(function() {
 	
 	$('select').change(function() {
 		getValues();
+		updateValues();
 		setValues();
 		//console.log(currentPlace + " \t", currentTime);
+		//console.log(makeString(currentPlace, currentTime));
 	});
 	
 	placeselect.change(function() {
