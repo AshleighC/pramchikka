@@ -155,7 +155,7 @@ function findDay() {
 
 //LINK STUFF ---------------------------------------------------------------------------
 
-var baseURL = "ashleighc.github.com/pramchikka/?";
+var baseURL = "http://ashleighc.github.com/pramchikka/?";
 
 function checkLink() {
   var query = location.search.substring(1);
