@@ -24,7 +24,7 @@ function populate() {
   }
 
   for (var i = 0; i < 60; i++) {
-    $('#minuteselect').append(new Option(formatMinute(i), i));
+    $('#minuteselect').append(new Option(twoDigits(i), i));
   }
 
   $.each(ampm, function() {
@@ -153,10 +153,97 @@ function findDay() {
 }
 
 
+//LINK STUFF ---------------------------------------------------------------------------
+
+//var baseURL = "ashleighc.github.com/pramchikka/?";
+var baseURL = "file:///home/ashleigh/stuff/pramchikka/index.html?"
+
+function checkLink() {
+  var query = location.search.substring(1);
+  if (query) {
+    //var items = decode(location.search.substring(1));
+    //console.log(items);
+    var items = decode(query);
+
+    var oldPlace = currentPlace;
+    var oldTime = {
+      month: currentTime.month,
+      date: currentTime.date,
+      hour: currentTime.hour,
+      minute: currentTime.minute,
+      day: currentTime.day
+    };
+
+    currentPlace = places[items[0]];
+    currentTime.month = months[items[1]];
+    currentTime.date = items[2];
+    currentTime.hour = items[3];
+    currentTime.minute = items[4];
+    currentTime.day = findDay();
+
+    updateValues();
+
+    currentTime = calculateTime(oldPlace);
+    currentPlace = oldPlace;
+    setValues();
+
+    //console.log(calculateTime(oldPlace));
+
+    /*var place = places[items[0]];
+    var month = months[items[1]];
+    var date = items[2];
+    var hour = items[3];
+    var minute = items[4];*/
+
+    console.log("oldPlace:", oldPlace);
+    console.log("oldTime:", oldTime);
+    console.log("currentPlace:", currentPlace);
+    console.log("currentTime:", currentTime);
+
+    //console.log(place, month, date, hour, minute);
+    //console.log(currentPlace);
+  }
+}
+
+function updateLink() {
+  var place = places.indexOf(currentPlace);
+  var month = months.indexOf(currentTime.month);
+  var date = currentTime.date;
+  var hour = currentTime.hour;
+  var minute = currentTime.minute;
+
+  var link = encode([place, month, date, hour, minute]);
+  $('#linktext').val(baseURL + link);
+}
+
+function encode(items) {
+  items[0] += 1;
+  var link = "";
+
+  for (var i = 0; i < items.length; i++) {
+    link = link + twoDigits(items[i].toString());
+  }
+
+  link = parseInt(link.substring(1));
+  return link.toString(36);
+}
+
+function decode(link) {
+  link = "0" + parseInt(link, 36);
+  var items = [];
+
+  for (var i = 0; i < link.length; i += 2) {
+    items.push(parseInt(link.substring(i, i + 2), 10));
+  }
+
+  items[0] -= 1;
+  return items;
+}
+
 //PROCESSING ---------------------------------------------------------------------------
 
 function updateValues() {
-  console.log(currentTime.day + " " + currentTime.month + " " + currentTime.date + ", " + currentTime.hour + ":" + currentTime.minute); // DEBUGGING CODE
+  //console.log(currentTime.day + " " + currentTime.month + " " + currentTime.date + ", " + currentTime.hour + ":" + currentTime.minute); // DEBUGGING CODE
 
   fixTimezones();
   var boxes = $('.timebox');
@@ -200,7 +287,7 @@ function makeString(place, time) {
   var hourAMPM = parseTime(time);
   var day = time.day;
   var hour = hourAMPM.hour;
-  var minute = formatMinute(time.minute);
+  var minute = twoDigits(time.minute);
   var ampm = hourAMPM.ampm;
   var month = time.month;
   var date = time.date;
@@ -236,7 +323,7 @@ function parseTime(time) {
   return {hour: hour, ampm: ampm}
 }
 
-function formatMinute(i) {
+function twoDigits(i) {
   var s = i.toString();
   if (s.length === 1) s = '0' + s;
   return s;
@@ -280,6 +367,8 @@ $(document).ready(function() {
   setUserTime();
   setValues();
   updateValues();
+  checkLink();
+  updateLink();
 
   var dayselect = $('#dayselect');
   var hourselect = $('#hourselect');
@@ -332,6 +421,7 @@ $(document).ready(function() {
   $('select').change(function() {
     getValues();
     updateValues();
+    updateLink();
   });
 
   placeselect.change(function() {
