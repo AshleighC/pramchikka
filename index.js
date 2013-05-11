@@ -105,25 +105,6 @@ function setUserTime() {
 
 //DST FIXES ----------------------------------------------------------------------------
 
-/*function isDST() {
-  var userTime = new Date();
-  var month = userTime.getMonth() + 1;
-
-  if ((month < 3) || (month > 11)) {
-    return false;
-  } else if ((month > 3) && (month < 11)) {
-    return true;
-  } else {
-    var prevSunday = userTime.getDate() - userTime.getDay();
-
-    if (month === 3) {
-      return prevSunday >= 8;
-    } else {
-      return prevSunday <= 0;
-    }
-  }
-}*/
-
 var timezones = {
   "Abu Dhabi": 12,
   "California": 0,
@@ -170,6 +151,7 @@ function findDay() {
   day = (new Date(year, month, date, 0, 0, 0, 0)).getDay();
   return days[(day + (days.length - 1)) % days.length];
 }
+
 
 //PROCESSING ---------------------------------------------------------------------------
 
@@ -345,13 +327,6 @@ $(document).ready(function() {
     var newDay = days.indexOf(dayselect.val());
     var oldDay = days.indexOf(findDay());
     var difference = newDay - oldDay;
-    console.log(difference);
-
-    /*if (Math.abs(difference) < 4) {
-      //console.log(currentTime.date + (newDay - oldDay));
-    } else {
-      //console.log(currentTime.date + (days.length - (newDay - oldDay)));
-    }*/
   });
 
   $('select').change(function() {
