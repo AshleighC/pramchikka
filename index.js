@@ -155,14 +155,12 @@ function findDay() {
 
 //LINK STUFF ---------------------------------------------------------------------------
 
-//var baseURL = "ashleighc.github.com/pramchikka/?";
-var baseURL = "file:///home/ashleigh/stuff/pramchikka/index.html?"
+var baseURL = "ashleighc.github.com/pramchikka/?";
+//var baseURL = "file:///home/ashleigh/stuff/pramchikka/index.html?"
 
 function checkLink() {
   var query = location.search.substring(1);
   if (query) {
-    //var items = decode(location.search.substring(1));
-    //console.log(items);
     var items = decode(query);
 
     var oldPlace = currentPlace;
@@ -187,21 +185,10 @@ function checkLink() {
     currentPlace = oldPlace;
     setValues();
 
-    //console.log(calculateTime(oldPlace));
-
-    /*var place = places[items[0]];
-    var month = months[items[1]];
-    var date = items[2];
-    var hour = items[3];
-    var minute = items[4];*/
-
     console.log("oldPlace:", oldPlace);
     console.log("oldTime:", oldTime);
     console.log("currentPlace:", currentPlace);
     console.log("currentTime:", currentTime);
-
-    //console.log(place, month, date, hour, minute);
-    //console.log(currentPlace);
   }
 }
 
