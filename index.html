@@ -27,17 +27,35 @@
       </div>
 
       <div class="select">
-        <div id="time">
-          <i>Time:</i>
-          <select id="dayselect" style="width: 120px"></select>
-          <select id="hourselect" style="width: 75px"></select>
-          <select id="minuteselect" style="width: 75px"></select>
-          <select id="ampmselect" style="width: 75px"></select>
+
+        <div id="row1">
+          <div id="time">
+            <i>Time:</i>
+            <select class="wide" id="dayselect"></select>
+            <select class="narrow" id="hourselect"></select>
+            <select class="narrow" id="minuteselect"></select>
+            <select class="narrow" id="ampmselect"></select>
+          </div>
+
+          <div id="place">
+            <i>Place:</i>
+            <select class="wide" id="placeselect"></select>
+          </div>
         </div>
-        <div id="place">
-          <i>Place:</i>
-          <select id="placeselect" style="width: 120px"></select>
+
+        <div id="row2">
+          <div id="date">
+            <i>Date:</i>
+            <select class="wide" id="monthselect"></select>
+            <select class="narrow" id="dateselect"></select>
+          </div>
+
+          <div id="link">
+            <i>Link:</i>
+            <input type="text" id="linktext" value="http://ashleighc.github.io/pramchikka/"></input>
+          </div>
         </div>
+
       </div>
 
     </div>

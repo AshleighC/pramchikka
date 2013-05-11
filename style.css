@@ -1,54 +1,79 @@
 body {
-	background: #F6F6F6;
-	background-image:url('debut_light.png');
-	font-family: Ubuntu;
+  background: #F6F6F6;
+  background-image:url('debut_light.png');
+  font-family: Ubuntu;
 }
 
 i {
-	font-size: 17px;
-	font-style: normal;
-	font-weight: bold;
-	padding-right: 4px;
-}
-
-select {
-	margin-top: 5px;
+  font-size: 17px;
+  font-style: normal;
+  font-weight: bold;
+  padding-right: 4px;
 }
 
 .box {
-	background: white;
-	box-shadow: 0px 0px 20px #DDD;
-	margin-bottom: 20px;
-	padding: 15px 20px 5px;
+  background: white;
+  box-shadow: 0px 0px 20px #DDD;
+  margin-bottom: 20px;
+  padding: 15px 20px 5px;
 }
 
 .timebox {
-	border-left: 4px solid #F00;
-	font-size: 24px;
-	line-height: 28px;
-	margin-bottom: 10px;
-	padding-top: 2px;
-	padding-left: 8px;
+  border-left: 4px solid #F00;
+  font-size: 24px;
+  line-height: 28px;
+  margin-bottom: 10px;
+  padding-top: 2px;
+  padding-left: 8px;
 }
 
 .wrap {
-	margin: 0px auto;
-	margin-top: 80px;
-	width: 600px;
+  margin: 0px auto;
+  margin-top: 80px;
+  width: 600px;
 }
 
 #pctext {
-	font-family: Pacifico;
-	font-size: 70px;
-	line-height: 140px;
-	text-align: center;
-	text-shadow: 1px 2px 4px #999;
+  font-family: Pacifico;
+  font-size: 70px;
+  line-height: 140px;
+  text-align: center;
+  text-shadow: 1px 2px 4px #999;
+}
+
+.wide {
+  width: 120px;
+}
+
+.narrow {
+  width: 75px;
+}
+
+select {
+  height: 30px;
+}
+
+#row1 select {
+  margin-top: 5px;
+}
+
+#row2 input {
+  width: 285px;
+  height: 30px;
 }
 
 #time {
-	float: left;
+  float: left;
 }
 
 #place {
-	float: right;
+  float: right;
+}
+
+#date {
+  float: left;
+}
+
+#link {
+  float: right;
 }

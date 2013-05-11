@@ -3,6 +3,16 @@
 var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 var ampm = ['am', 'pm'];
 var places = ['Abu Dhabi', 'California', 'Colorado', 'Manila', 'Minnesota', 'New York'];
+var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+var monthdays = function() {
+  var result = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  var year = (new Date()).getYear();
+  if (!(year & 3 || year & 15 && !(year % 25))) {
+    result[1] = 29;
+  }
+  return result;
+}();
 
 function populate() {
   $.each(days, function() {
@@ -24,6 +34,14 @@ function populate() {
   $.each(places, function() {
     $('#placeselect').append(new Option(this, this));
   });
+
+  $.each(months, function() {
+    $('#monthselect').append(new Option(this, this));
+  });
+
+  for (var i = 1; i <= 31; i++) {
+    $('#dateselect').append(new Option(i, i));
+  }
 }
 
 
@@ -54,16 +72,6 @@ function colors(i) {
 
 //DEFAULTS ---------------------------------------------------------------------------
 
-var abbrevs = {
-  'Mon': 'Monday',
-  'Tue': 'Tuesday',
-  'Wed': 'Wednesday',
-  'Thu': 'Thursday',
-  'Fri': 'Friday',
-  'Sat': 'Saturday',
-  'Sun': 'Sunday'
-}
-
 var currentPlace = places[3];
 var currentTime = Object();
 
@@ -86,21 +94,35 @@ function setUserPlace() {
 }
 
 function setUserTime() {
-  var userTime = Date();
-
-  currentTime.day = abbrevs[userTime.substring(0, 3)];
-  $('#dayselect').val(currentTime.day);
-
-  var index = userTime.indexOf(':');
-  var hours = parseInt(userTime.substring(index-2, index));
-  var minutes = parseInt(userTime.substring(index+1, index+3));
-
-  currentTime.hour = parseInt(userTime.substring(index-2, index));
-  currentTime.minute = parseInt(userTime.substring(index+1, index+3));
+  var userTime = new Date();
+  currentTime.day = days[(userTime.getDay() + (days.length - 1)) % days.length];
+  currentTime.hour = userTime.getHours();
+  currentTime.minute = userTime.getMinutes();
+  currentTime.month = months[userTime.getMonth()];
+  currentTime.date = userTime.getDate();
 }
 
 
-//PROCESSING ---------------------------------------------------------------------------
+//DST FIXES ----------------------------------------------------------------------------
+
+/*function isDST() {
+  var userTime = new Date();
+  var month = userTime.getMonth() + 1;
+
+  if ((month < 3) || (month > 11)) {
+    return false;
+  } else if ((month > 3) && (month < 11)) {
+    return true;
+  } else {
+    var prevSunday = userTime.getDate() - userTime.getDay();
+
+    if (month === 3) {
+      return prevSunday >= 8;
+    } else {
+      return prevSunday <= 0;
+    }
+  }
+}*/
 
 var timezones = {
   "Abu Dhabi": 12,
@@ -111,7 +133,50 @@ var timezones = {
   "New York": 3
 };
 
+function isDST() {
+  var userTime = new Date();
+  var month = months.indexOf(currentTime.month) + 1;
+
+  if ((month < 3) || (month > 11)) {
+    return false;
+  } else if ((month > 3) && (month < 11)) {
+    return true;
+  } else {
+    var prevSunday = currentTime.date - ((days.indexOf(currentTime.day) + 1) % 7);
+
+    if (month === 3) {
+      return prevSunday >= 8;
+    } else {
+      return prevSunday <= 0;
+    }
+  }
+}
+
+function fixTimezones() {
+  if (isDST()) {
+    timezones["Abu Dhabi"] = 11;
+    timezones["Manila"] = 15;
+  } else {
+    timezones["Abu Dhabi"] = 12;
+    timezones["Manila"] = 16;
+  }
+}
+
+function findDay() {
+  var month = months.indexOf(currentTime.month);
+  var date = currentTime.date;
+  var year = (new Date()).getFullYear();
+
+  day = (new Date(year, month, date, 0, 0, 0, 0)).getDay();
+  return days[(day + (days.length - 1)) % days.length];
+}
+
+//PROCESSING ---------------------------------------------------------------------------
+
 function updateValues() {
+  console.log(currentTime.day + " " + currentTime.month + " " + currentTime.date + ", " + currentTime.hour + ":" + currentTime.minute); // DEBUGGING CODE
+
+  fixTimezones();
   var boxes = $('.timebox');
 
   for (var i = 0; i < boxes.length; i++) {
@@ -125,17 +190,28 @@ function calculateTime(place) {
   var day = currentTime.day;
   var hour = currentTime.hour + difference;
   var minute = currentTime.minute;
+  var month = months.indexOf(currentTime.month);
+  var date = currentTime.date;
 
   if (hour < 0) {
     hour = hour + 24;
-    day = days[(days.indexOf(day) - 1) % days.length];
-  }
-  else if (hour > 23) {
+    day = days[(days.indexOf(day) + (days.length - 1)) % days.length];
+    date = date - 1;
+  } else if (hour > 23) {
     hour = hour - 24;
     day = days[(days.indexOf(day) + 1) % days.length];
+    date = date + 1;
   }
 
-  return {day: day, hour: hour, minute: minute}
+  if (date < 1) {
+    month = (month + (months.length - 1)) % months.length;
+    date = monthdays[month];
+  } else if (date > monthdays[month]) {
+    month = (month + 1) % months.length;
+    date = 1;
+  }
+
+  return {month: months[month], date: date, day: day, hour: hour, minute: minute}
 }
 
 function makeString(place, time) {
@@ -144,8 +220,14 @@ function makeString(place, time) {
   var hour = hourAMPM.hour;
   var minute = formatMinute(time.minute);
   var ampm = hourAMPM.ampm;
+  var month = time.month;
+  var date = time.date;
 
-  return "<b>" + place + "</b>: " + day + " " + hour + ":" + minute + ampm;
+  var placeString = "<b>" + place + "</b>: ";
+  var dateString = month.substring(0, 3) + " " + date;
+  var timeString = hour + ":" + minute + ampm;
+
+  return placeString + day + " " + dateString + ", " + timeString;
 }
 
 function parseTime(time) {
@@ -205,28 +287,79 @@ function setValues() {
   $('#minuteselect').val(currentTime.minute);
   $('#ampmselect').val(hourAMPM.ampm);
   $('#placeselect').val(currentPlace);
+  $('#monthselect').val(currentTime.month);
+  $('#dateselect').val(currentTime.date);
 }
 
 $(document).ready(function() {
-    populate();
-    setColors();
-    setUserPlace();
-    setUserTime();
-    setValues();
+  populate();
+  setColors();
+  setUserPlace();
+  setUserTime();
+  setValues();
+  updateValues();
+
+  var dayselect = $('#dayselect');
+  var hourselect = $('#hourselect');
+  var minuteselect = $('#minuteselect');
+  var ampmselect = $('#ampmselect');
+  var placeselect = $('#placeselect');
+  var monthselect = $('#monthselect');
+  var dateselect = $('#dateselect');
+
+  dayselect.attr('disabled', 'disabled');
+
+  $('#linktext').focus(function() {
+    $(this).select();
+  });
+
+  $('#linktext').mouseup(function(e) {
+    e.preventDefault();
+  });
+
+  dateselect.change(function() {
+    currentTime.date = dateselect.val();
+    dayselect.val(findDay());
+  });
+
+  monthselect.change(function() {
+    currentTime.month = monthselect.val();
+    dateselect.empty();
+
+    var currentDate = dateselect.val();
+    var daysInMonth = monthdays[months.indexOf(currentTime.month)];
+
+    for (var i = 1; i <= daysInMonth; i++) {
+      dateselect.append(new Option(i, i));
+    }
+
+    if (currentTime.date > daysInMonth) {
+      currentTime.date = daysInMonth;
+    }
+
+    dateselect.val(currentTime.date);
+    dayselect.val(findDay());
+  });
+
+  dayselect.change(function() {
+    var newDay = days.indexOf(dayselect.val());
+    var oldDay = days.indexOf(findDay());
+    var difference = newDay - oldDay;
+    console.log(difference);
+
+    /*if (Math.abs(difference) < 4) {
+      //console.log(currentTime.date + (newDay - oldDay));
+    } else {
+      //console.log(currentTime.date + (days.length - (newDay - oldDay)));
+    }*/
+  });
+
+  $('select').change(function() {
+    getValues();
     updateValues();
+  });
 
-    var dayselect = $('#dayselect');
-    var hourselect = $('#hourselect');
-    var minuteselect = $('#minuteselect');
-    var ampmselect = $('#ampmselect');
-    var placeselect = $('#placeselect');
-
-    $('select').change(function() {
-      getValues();
-      updateValues();
-    });
-
-    placeselect.change(function() {
-      document.cookie = 'place=' + escape(placeselect.val()) + ';expires=Wed, 1 Jan 2020 00:00:00 GMT';
-    })
+  placeselect.change(function() {
+    document.cookie = 'place=' + escape(placeselect.val()) + ';expires=Wed, 1 Jan 2020 00:00:00 GMT';
+  });
 });
